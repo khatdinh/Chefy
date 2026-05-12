@@ -1,7 +1,11 @@
 {
   "custom": {
-    "api": {
-      "endpoint": ""
+    "API": {
+      "chefcraft-api": {
+        "endpoint": "",
+        "region": "",
+        "apiName": "chefcraft-api"
+      }
     }
   }
 }
