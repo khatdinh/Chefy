@@ -8,7 +8,6 @@ export const recipeFunction = defineFunction({
   memoryMB: 256,
   environment: {
     OPENAI_API_KEY: secret("OPENAI_API_KEY"),
-    OPENAI_MODEL: process.env.OPENAI_MODEL || "gpt-5-mini",
+    OPENAI_MODEL: "gpt-5-mini",
   },
 });
-
