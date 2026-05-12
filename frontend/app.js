@@ -11,7 +11,8 @@ const setStatus = (text) => {
   status.textContent = text;
 };
 
-const apiEndpoint = outputs.custom?.api?.endpoint || "";
+const apiConfig = outputs.custom?.API ? Object.values(outputs.custom.API)[0] : null;
+const apiEndpoint = apiConfig?.endpoint || "";
 
 const getRecipeApiUrl = () => {
   if (!apiEndpoint) {
