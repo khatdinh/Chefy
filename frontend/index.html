@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ChefCraft</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app">
+      <section class="panel input-panel" aria-labelledby="app-title">
+        <div>
+          <p class="eyebrow">Professional technique. Home kitchen pace.</p>
+          <h1 id="app-title">ChefCraft</h1>
+          <p class="intro">
+            Turn an idea, ingredient list, or craving into a disciplined recipe with mise en place, timing,
+            seasoning, mistakes to avoid, and a clean plating note.
+          </p>
+        </div>
+
+        <form id="recipe-form" class="recipe-form">
+          <label for="prompt">What are we cooking?</label>
+          <textarea
+            id="prompt"
+            name="prompt"
+            rows="7"
+            placeholder="Example: scallops with white wine sauce, serves 2, quick but elegant"
+            required
+          ></textarea>
+
+          <div class="controls">
+            <button id="submit-button" type="submit">Create Recipe</button>
+            <button id="clear-button" type="button" class="secondary">Clear</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel output-panel" aria-live="polite">
+        <div class="output-header">
+          <p class="eyebrow">Chef's pass</p>
+          <span id="status" class="status">Ready</span>
+        </div>
+        <article id="recipe-output" class="recipe-output">
+          <p class="placeholder">
+            Your recipe will appear here. Keep the request honest and specific: time, diet, budget,
+            ingredients, and who you are feeding.
+          </p>
+        </article>
+      </section>
+    </main>
+
+    <script src="./app.js" type="module"></script>
+  </body>
+</html>

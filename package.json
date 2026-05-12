@@ -1,0 +1,22 @@
+{
+  "name": "chefcraft",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build",
+    "amplify:sandbox": "ampx sandbox",
+    "amplify:secret": "ampx sandbox secret set OPENAI_API_KEY"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@aws-amplify/backend": "^1.16.1",
+    "@aws-amplify/backend-cli": "^1.8.0",
+    "@types/aws-lambda": "^8.10.149",
+    "aws-cdk-lib": "^2.200.0",
+    "constructs": "^10.4.2",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5"
+  }
+}
