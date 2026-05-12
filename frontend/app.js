@@ -6,6 +6,10 @@ const clearButton = document.querySelector("#clear-button");
 const submitButton = document.querySelector("#submit-button");
 const output = document.querySelector("#recipe-output");
 const status = document.querySelector("#status");
+const promptChips = document.querySelectorAll("[data-prompt]");
+
+const emptyStateHtml =
+  '<div class="empty-state"><p class="empty-title">Ready for the brief.</p><p class="placeholder">Add a dish, ingredients, timing, or style and ChefCraft will build the recipe.</p></div>';
 
 const setStatus = (text) => {
   status.textContent = text;
@@ -128,8 +132,14 @@ form.addEventListener("submit", async (event) => {
 
 clearButton.addEventListener("click", () => {
   promptInput.value = "";
-  output.innerHTML =
-    '<p class="placeholder">Your recipe will appear here. Keep the request honest and specific: time, diet, budget, ingredients, and who you are feeding.</p>';
+  output.innerHTML = emptyStateHtml;
   setStatus("Ready");
   promptInput.focus();
+});
+
+promptChips.forEach((chip) => {
+  chip.addEventListener("click", () => {
+    promptInput.value = chip.dataset.prompt || "";
+    promptInput.focus();
+  });
 });

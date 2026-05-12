@@ -7,46 +7,63 @@
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <main class="app">
-      <section class="panel input-panel" aria-labelledby="app-title">
+    <main class="site-shell">
+      <header class="topbar">
         <div>
-          <p class="eyebrow">Professional technique. Home kitchen pace.</p>
-          <h1 id="app-title">ChefCraft</h1>
-          <p class="intro">
-            Turn an idea, ingredient list, or craving into a disciplined recipe with mise en place, timing,
-            seasoning, mistakes to avoid, and a clean plating note.
-          </p>
+          <p class="eyebrow">ChefCraft</p>
+          <h1 class="brand-title">Recipe Studio</h1>
         </div>
-
-        <form id="recipe-form" class="recipe-form">
-          <label for="prompt">What are we cooking?</label>
-          <textarea
-            id="prompt"
-            name="prompt"
-            rows="7"
-            placeholder="Example: scallops with white wine sauce, serves 2, quick but elegant"
-            required
-          ></textarea>
-
-          <div class="controls">
-            <button id="submit-button" type="submit">Create Recipe</button>
-            <button id="clear-button" type="button" class="secondary">Clear</button>
-          </div>
-        </form>
-      </section>
-
-      <section class="panel output-panel" aria-live="polite">
-        <div class="output-header">
-          <p class="eyebrow">Chef's pass</p>
+        <div class="topbar-meta">
+          <span>Metric recipes</span>
           <span id="status" class="status">Ready</span>
         </div>
-        <article id="recipe-output" class="recipe-output">
-          <p class="placeholder">
-            Your recipe will appear here. Keep the request honest and specific: time, diet, budget,
-            ingredients, and who you are feeding.
-          </p>
-        </article>
-      </section>
+      </header>
+
+      <div class="workspace">
+        <section class="panel input-panel" aria-labelledby="app-title">
+          <div class="section-heading">
+            <p class="eyebrow">Prompt</p>
+            <h2 id="app-title">What are we cooking?</h2>
+          </div>
+
+          <form id="recipe-form" class="recipe-form">
+            <label for="prompt">Dish brief</label>
+            <textarea
+              id="prompt"
+              name="prompt"
+              rows="8"
+              placeholder="Scallops with white wine sauce, serves 2, quick but elegant"
+              required
+            ></textarea>
+
+            <div class="prompt-chips" aria-label="Example prompts">
+              <button type="button" class="chip" data-prompt="Creamy carbonara, serves 4, traditional style">Carbonara</button>
+              <button type="button" class="chip" data-prompt="Weeknight chicken thighs with pan sauce, serves 2">Chicken thighs</button>
+              <button type="button" class="chip" data-prompt="Vegetarian mushroom risotto, restaurant finish">Mushroom risotto</button>
+            </div>
+
+            <div class="controls">
+              <button id="submit-button" type="submit">Create Recipe</button>
+              <button id="clear-button" type="button" class="secondary">Clear</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="panel output-panel" aria-live="polite">
+          <div class="output-header">
+            <div>
+              <p class="eyebrow">Output</p>
+              <h2>Recipe</h2>
+            </div>
+          </div>
+          <article id="recipe-output" class="recipe-output">
+            <div class="empty-state">
+              <p class="empty-title">Ready for the brief.</p>
+              <p class="placeholder">Add a dish, ingredients, timing, or style and ChefCraft will build the recipe.</p>
+            </div>
+          </article>
+        </section>
+      </div>
     </main>
 
     <script src="./app.js" type="module"></script>
