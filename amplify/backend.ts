@@ -2,7 +2,7 @@ import { defineBackend } from "@aws-amplify/backend";
 import { Stack } from "aws-cdk-lib";
 import { CorsHttpMethod, HttpApi, HttpMethod } from "aws-cdk-lib/aws-apigatewayv2";
 import { HttpLambdaIntegration } from "aws-cdk-lib/aws-apigatewayv2-integrations";
-import { recipeFunction } from "./functions/recipe/resource";
+import { recipeFunction } from "./functions/recipe/resource.ts";
 
 const backend = defineBackend({
   recipeFunction,
