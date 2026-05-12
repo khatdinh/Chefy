@@ -32,11 +32,12 @@ httpApi.addRoutes({
 
 backend.addOutput({
   custom: {
-    api: {
-      endpoint: httpApi.url,
-      region: Stack.of(httpApi).region,
-      name: httpApi.httpApiName,
+    API: {
+      [httpApi.httpApiName!]: {
+        endpoint: httpApi.url!,
+        region: Stack.of(httpApi).region,
+        apiName: httpApi.httpApiName!,
+      },
     },
   },
 });
-
