@@ -98,6 +98,12 @@ const extractText = (data: {
   return chunks.join("\n").trim();
 };
 
+const getOpenAIErrorMessage = (status: number, data: { error?: { code?: string; type?: string; message?: string } }) => {
+  const code = data.error?.code || data.error?.type || "unknown_error";
+  const message = data.error?.message || "OpenAI rejected the request.";
+  return `OpenAI rejected the request (${status} ${code}): ${message}`;
+};
+
 export const handler: APIGatewayProxyHandlerV2 = async (event) => {
   if (event.requestContext.http.method === "OPTIONS") {
     return json(204, {});
@@ -142,7 +148,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
   const data = await response.json();
   if (!response.ok) {
     console.error("OpenAI error", data);
-    return json(response.status, { error: "ChefCraft could not generate that recipe." });
+    return json(response.status, { error: getOpenAIErrorMessage(response.status, data) });
   }
 
   const recipe = extractText(data);
@@ -152,4 +158,3 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
 
   return json(200, { recipe });
 };
-
