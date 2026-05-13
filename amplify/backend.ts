@@ -19,9 +19,15 @@ const httpApi = new HttpApi(apiStack, "ChefCraftHttpApi", {
   createDefaultStage: true,
   corsPreflight: {
     allowHeaders: ["content-type"],
-    allowMethods: [CorsHttpMethod.POST, CorsHttpMethod.OPTIONS],
+    allowMethods: [CorsHttpMethod.GET, CorsHttpMethod.POST, CorsHttpMethod.OPTIONS],
     allowOrigins: ["*"],
   },
+});
+
+httpApi.addRoutes({
+  path: "/ingredients",
+  methods: [HttpMethod.GET],
+  integration: recipeIntegration,
 });
 
 httpApi.addRoutes({

@@ -47,6 +47,27 @@
               <button id="clear-button" type="button" class="secondary">Clear</button>
             </div>
           </form>
+
+          <section class="sheet-panel" aria-labelledby="sheet-title">
+            <div class="section-heading compact">
+              <p class="eyebrow">Pantry</p>
+              <h2 id="sheet-title">Google Sheet ingredients</h2>
+            </div>
+            <form id="sheet-form" class="sheet-form">
+              <label for="sheet-url">Published sheet URL</label>
+              <div class="sheet-controls">
+                <input
+                  id="sheet-url"
+                  name="sheet-url"
+                  type="url"
+                  placeholder="https://docs.google.com/spreadsheets/..."
+                />
+                <button id="sheet-button" type="submit" class="secondary">Load</button>
+              </div>
+            </form>
+            <p id="sheet-status" class="sheet-status">Paste a public Google Sheet URL with an Ingredient column.</p>
+            <div id="ingredient-list" class="ingredient-list" aria-label="Loaded ingredients"></div>
+          </section>
         </section>
 
         <section class="panel output-panel" aria-live="polite">
@@ -56,6 +77,13 @@
               <h2>Recipe</h2>
             </div>
           </div>
+          <section id="recommendations" class="recommendations" hidden>
+            <div class="recommendations-heading">
+              <p class="eyebrow">From your sheet</p>
+              <h2>Recommended dishes</h2>
+            </div>
+            <div id="dish-list" class="dish-list"></div>
+          </section>
           <article id="recipe-output" class="recipe-output">
             <div class="empty-state">
               <p class="empty-title">Ready for the brief.</p>

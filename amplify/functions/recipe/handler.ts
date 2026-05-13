@@ -1,4 +1,4 @@
-import type { APIGatewayProxyHandlerV2 } from "aws-lambda";
+import type { APIGatewayProxyEventV2, APIGatewayProxyHandlerV2 } from "aws-lambda";
 import { env } from "$amplify/env/chefcraft-recipe";
 
 const SYSTEM_PROMPT = `You are ChefCraft, an expert recipe assistant GPT wrapper inspired by the techniques, discipline, and kitchen philosophy of world-class professional chefs such as Marco Pierre White, Gordon Ramsay, and other fine-dining chefs.
@@ -67,7 +67,7 @@ Default output format:
 const responseHeaders = {
   "access-control-allow-origin": "*",
   "access-control-allow-headers": "content-type",
-  "access-control-allow-methods": "POST,OPTIONS",
+  "access-control-allow-methods": "GET,POST,OPTIONS",
   "cache-control": "no-store",
   "content-type": "application/json",
 };
@@ -104,11 +104,132 @@ const getOpenAIErrorMessage = (status: number, data: { error?: { code?: string; 
   return `OpenAI rejected the request (${status} ${code}): ${message}`;
 };
 
-export const handler: APIGatewayProxyHandlerV2 = async (event) => {
-  if (event.requestContext.http.method === "OPTIONS") {
-    return json(204, {});
+const parseCsv = (text: string) => {
+  const rows: string[][] = [];
+  let row: string[] = [];
+  let value = "";
+  let quoted = false;
+
+  for (let index = 0; index < text.length; index += 1) {
+    const char = text[index];
+    const next = text[index + 1];
+
+    if (quoted && char === '"' && next === '"') {
+      value += '"';
+      index += 1;
+      continue;
+    }
+
+    if (char === '"') {
+      quoted = !quoted;
+      continue;
+    }
+
+    if (!quoted && char === ",") {
+      row.push(value.trim());
+      value = "";
+      continue;
+    }
+
+    if (!quoted && (char === "\n" || char === "\r")) {
+      if (char === "\r" && next === "\n") {
+        index += 1;
+      }
+      row.push(value.trim());
+      if (row.some(Boolean)) {
+        rows.push(row);
+      }
+      row = [];
+      value = "";
+      continue;
+    }
+
+    value += char;
   }
 
+  row.push(value.trim());
+  if (row.some(Boolean)) {
+    rows.push(row);
+  }
+
+  return rows;
+};
+
+const toCsvUrl = (rawUrl: string) => {
+  const url = new URL(rawUrl);
+
+  if (url.hostname !== "docs.google.com") {
+    throw new Error("Use a public Google Sheets URL from docs.google.com.");
+  }
+
+  if (url.pathname.includes("/pub")) {
+    url.pathname = url.pathname.replace(/\/pubhtml$/, "/pub");
+    url.searchParams.set("output", "csv");
+    return url.toString();
+  }
+
+  const id = url.pathname.match(/\/spreadsheets\/d\/([^/]+)/)?.[1];
+  if (!id) {
+    throw new Error("Use a valid Google Sheets URL.");
+  }
+
+  const gid = url.hash.match(/gid=(\d+)/)?.[1] || url.searchParams.get("gid") || "0";
+  return `https://docs.google.com/spreadsheets/d/${id}/export?format=csv&gid=${gid}`;
+};
+
+const getIngredientsFromSheet = async (sheetUrl: string) => {
+  const csvUrl = toCsvUrl(sheetUrl);
+  const response = await fetch(csvUrl);
+
+  if (!response.ok) {
+    throw new Error("Could not read the sheet. Make sure it is shared publicly or published as CSV.");
+  }
+
+  const csv = await response.text();
+  if (csv.length > 100_000) {
+    throw new Error("The sheet is too large. Keep this to a simple ingredient list.");
+  }
+
+  const rows = parseCsv(csv);
+  if (!rows.length) {
+    return [];
+  }
+
+  const headers = rows[0].map((header) => header.toLowerCase());
+  const ingredientColumn = headers.findIndex((header) =>
+    ["ingredient", "ingredients", "item", "name", "food"].includes(header),
+  );
+  const startRow = ingredientColumn >= 0 ? 1 : 0;
+  const columnIndex = ingredientColumn >= 0 ? ingredientColumn : 0;
+
+  return [...new Set(
+    rows
+      .slice(startRow)
+      .map((row) => row[columnIndex]?.trim())
+      .filter((ingredient): ingredient is string => Boolean(ingredient && ingredient.length <= 80)),
+  )].slice(0, 80);
+};
+
+const handleIngredients = async (event: APIGatewayProxyEventV2) => {
+  const sheetUrl = String(event.queryStringParameters?.sheet || "").trim();
+  if (!sheetUrl) {
+    return json(400, { error: "Add a Google Sheet URL." });
+  }
+
+  if (sheetUrl.length > 800) {
+    return json(400, { error: "Google Sheet URL is too long." });
+  }
+
+  try {
+    const ingredients = await getIngredientsFromSheet(sheetUrl);
+    return json(200, { ingredients });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Could not load ingredients.";
+    return json(400, { error: message });
+  }
+};
+
+const handleRecipe = async (event: APIGatewayProxyEventV2) => {
   if (event.requestContext.http.method !== "POST") {
     return json(405, { error: "Use POST." });
   }
@@ -157,4 +278,20 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
   }
 
   return json(200, { recipe });
+};
+
+export const handler: APIGatewayProxyHandlerV2 = async (event) => {
+  if (event.requestContext.http.method === "OPTIONS") {
+    return json(204, {});
+  }
+
+  if (event.rawPath.endsWith("/ingredients")) {
+    return handleIngredients(event);
+  }
+
+  if (event.rawPath.endsWith("/recipe")) {
+    return handleRecipe(event);
+  }
+
+  return json(404, { error: "Not found." });
 };

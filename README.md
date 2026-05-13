@@ -83,6 +83,19 @@ npm run dev
 The frontend reads the generated `amplify_outputs.json` file at build time and calls the deployed
 HTTP API endpoint directly.
 
+## Google Sheet Ingredients
+
+The app can read a public Google Sheet and recommend dishes from the ingredients in it.
+
+Use a simple sheet with either:
+
+- A column named `Ingredient`, `Ingredients`, `Item`, `Name`, or `Food`
+- Or ingredients in the first column
+
+Then share the sheet publicly or publish it to the web, paste the Google Sheets URL into the app,
+and choose **Load**. The backend only accepts `docs.google.com` URLs and returns a cleaned ingredient
+list to the frontend.
+
 ## Local Frontend Preview
 
 Use `npm run dev`. Opening `frontend/index.html` directly is no longer ideal because the production
